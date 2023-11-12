@@ -1,0 +1,47 @@
+.exzo-logo{
+    max-width: 50px;
+    border-radius: 10px;
+    margin: 4px;
+}
+
+.connect-button {
+    background: linear-gradient(to bottom left, #44e8d4, #2ef2b1)!important;
+    border: none;
+    border-radius: 8px;
+    color: rgba(40, 40, 40, 0.894)!important;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .connect-button:hover {
+    background: linear-gradient(to bottom left, #2ef2b188, #44e8d589)!important;
+  }
+
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(to left top, #061311, #071211, #081110, #0a1010, #0b0f0f, #0b0f10, #0a1010, #0a1011, #091114, #081216, #0a1219, #0d121b);
+  }
+
+  .footer {
+    margin-top: auto; 
+  }
+
+  .text {
+    color: #fff;
+  }
+
+  .components {
+    margin-bottom: 20px !important;
+    align-items: center !important;
+    background: rgba( 122, 118, 118, 0.25 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 18px );
+    -webkit-backdrop-filter: blur( 18px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+  }
+
+  .heading {
+    color: #ddf5ff;
+  }
