@@ -7,6 +7,7 @@ import Info from './components/Info';
 import { Heading,Text } from '@chakra-ui/react';
 import { useToast ,Button,Box} from "@chakra-ui/react";
 import claimableAirdrop from "./contract/ClaimableAirdrop.json"
+import claims from "./contract/claims.json"
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -14,24 +15,29 @@ function App() {
   const [signer, setSigner] = useState(null);
   const [hash,setHash] = useState("")
   const [claimsCount,setClaimsCount] = useState(0)
+  const [buttonText,setButtonText] = useState("Claim")
   const toast = useToast();
 
-  useEffect(() => {
-    const fetchClaimsAndFunds = async() => {
-      const contractInstance = new ethers.Contract(claimableAirdrop.address,claimableAirdrop.abi,signer)
-      try {
-        const res = await contractInstance.getClaimsCount();
-       setClaimsCount(parseInt(res._hex,16))
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    if(signer){
-      fetchClaimsAndFunds();
-    }
-    const intervalId = setInterval(fetchClaimsAndFunds, 10000);
-    return () => clearInterval(intervalId);
-  }, [signer]); 
+  const overrides = {
+    gasLimit: 9999999,
+  }
+
+  // useEffect(() => {
+  //   const fetchClaimsAndFunds = async() => {
+  //     const contractInstance = new ethers.Contract(claimableAirdrop.address,claimableAirdrop.abi,signer)
+  //     try {
+  //       const res = await contractInstance.getClaimsCount();
+  //      setClaimsCount(parseInt(res._hex,16))
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   if(signer){
+  //     fetchClaimsAndFunds();
+  //   }
+  //   const intervalId = setInterval(fetchClaimsAndFunds, 10000);
+  //   return () => clearInterval(intervalId);
+  // }, [signer]); 
 
   const connectWallet = async () => {
     try {
@@ -88,18 +94,31 @@ function App() {
 
   const claim = async()=>{
     if(signer){
+      const claimData = claims.res.claims[ethers.utils.getAddress(selectedAccount)]
+      console.log(claimData)
       const contractInstance = new ethers.Contract(claimableAirdrop.address,claimableAirdrop.abi,signer)
       try {
-        const res = await contractInstance.claim();
-        setHash(res.hash)
+        const res = await contractInstance.claim(claimData.index,ethers.utils.getAddress(selectedAccount),ethers.BigNumber.from(claimData.amount),claimData.proof,overrides);
+        setButtonText("Processing Transaction...")
+        console.log(await res.wait())
         toast({
           title: "Tokens have been successfully claimed!",
-          status: "error",
+          status: "success",
           duration: 5000,
           isClosable: true,
         });
+        setButtonText("Claimed")
       } catch (error) {
         console.log(error);
+        if(!claimData){
+          toast({
+            title: "You don't own any XZO Tokens!",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+          return;
+        }
         toast({
           title: "Encountered an error, if you already claimed please don't waste your time here!",
           status: "error",
@@ -155,7 +174,7 @@ function App() {
             className="connect-button"
             width={260}
           >
-           Claim
+           {buttonText}
           </Button>
 
           {hash.length>0?"Tx Successful at "+hash:""}
