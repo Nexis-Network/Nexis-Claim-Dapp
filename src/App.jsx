@@ -13,8 +13,6 @@ function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [signer, setSigner] = useState(null);
-  const [hash,setHash] = useState("")
-  const [claimsCount,setClaimsCount] = useState(0)
   const [buttonText,setButtonText] = useState("Claim")
   const toast = useToast();
 
@@ -22,30 +20,13 @@ function App() {
     gasLimit: 9999999,
   }
 
-  // useEffect(() => {
-  //   const fetchClaimsAndFunds = async() => {
-  //     const contractInstance = new ethers.Contract(claimableAirdrop.address,claimableAirdrop.abi,signer)
-  //     try {
-  //       const res = await contractInstance.getClaimsCount();
-  //      setClaimsCount(parseInt(res._hex,16))
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   if(signer){
-  //     fetchClaimsAndFunds();
-  //   }
-  //   const intervalId = setInterval(fetchClaimsAndFunds, 10000);
-  //   return () => clearInterval(intervalId);
-  // }, [signer]); 
-
   const connectWallet = async () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
         const currentSigner = provider.getSigner();
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId === '0xAA36A7'.toLowerCase()) { 
+      if (chainId === '0x1'.toLowerCase()) { 
         console.log("connected")
         setSelectedAccount(accounts[0]);
         setIsConnected(true);
@@ -62,7 +43,7 @@ function App() {
       } else {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0xAA36A7' }], 
+          params: [{ chainId: '0x1' }], 
         });
       }
     } catch (error) {
@@ -76,15 +57,15 @@ function App() {
       await window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
-          chainId: '0xAA36A7',
-          chainName: 'Sepolia',
+          chainId: '0x1',
+          chainName: 'Ethereum Mainnet',
           nativeCurrency: {
-            name: 'Sepolia',
+            name: 'Ethereum',
             symbol: 'ETH',
             decimals: 18,
           },
-          rpcUrls: ['https://rpc.sepolia.org'],
-          blockExplorerUrls: ['https://evm-testnet.Exzoscan.io/'], 
+          rpcUrls: ['https://rpc.ankr.com/eth'],
+          blockExplorerUrls: ['https://etherscan.io/'], 
         }],
       });
     } catch (error) {
@@ -163,7 +144,6 @@ function App() {
           },
         }}
       >
-        Stats: {claimsCount} people have claimed their funds till now!
       </Text>
     </Box>
           <br />
@@ -176,8 +156,6 @@ function App() {
           >
            {buttonText}
           </Button>
-
-          {hash.length>0?"Tx Successful at "+hash:""}
         </div>
       ):<Info/>}
 
